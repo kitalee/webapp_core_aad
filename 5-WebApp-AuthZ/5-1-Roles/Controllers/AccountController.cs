@@ -34,7 +34,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         }
 
         [MsalUiRequiredExceptionFilter(Scopes = new[] { GraphScopes.DirectoryReadAll })]
-        [Authorize(Roles = AppRoles.DirectoryViewers)]
+        [Authorize(Policy = "MixedRole")]
+        //[Authorize(Policy = "DirectoryViewerRole")]
+        //[Authorize(Policy = "SubGroup2-Part1Only")]
+        //[Authorize(Roles = AppRoles.DirectoryViewers)]
         public async Task<IActionResult> Groups()
         {
             string[] scopes = new[] { GraphScopes.DirectoryReadAll };
@@ -52,5 +55,43 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             return View();
         }
+
+        //public static IEnumerable<string> GetGroupMembershipsByObjectId(string id = null)
+        //{
+        //    if (string.IsNullOrEmpty(id))
+        //        id = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+
+        //    IList<string> groupMembership = new List<string>();
+        //    try
+        //    {
+        //        ActiveDirectoryClient activeDirectoryClient;
+        //        //ActiveDirectoryClient activeDirectoryClient = ActiveDirectoryClient;
+        //        IUser user = activeDirectoryClient.Users.Where(u => u.ObjectId == id).ExecuteSingleAsync().Result;
+        //        var userFetcher = (IUserFetcher)user;
+
+        //        IPagedCollection<IDirectoryObject> pagedCollection = userFetcher.MemberOf.ExecuteAsync().Result;
+        //        do
+        //        {
+        //            List<IDirectoryObject> directoryObjects = pagedCollection.CurrentPage.ToList();
+        //            foreach (IDirectoryObject directoryObject in directoryObjects)
+        //            {
+        //                if (directoryObject is Group)
+        //                {
+        //                    var group = directoryObject as Group;
+        //                    groupMembership.Add(group.DisplayName);
+        //                }
+        //            }
+        //            pagedCollection = pagedCollection.GetNextPageAsync().Result;
+        //        } while (pagedCollection != null);
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ExceptionHandler.HandleException(e);
+        //        throw e;
+        //    }
+
+        //    return groupMembership;
+        //}
     }
 }

@@ -51,6 +51,22 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Add Graph
             services.AddGraphService(Configuration);
+            services.AddAuthorization(option => option.AddPolicy("SubGroupOnly", policy => policy.RequireClaim("groups", "7b911a00-4cda-4ac8-8e9b-38255412c62c")));
+            services.AddAuthorization(option => option.AddPolicy("SubGroup2-Part1Only", policy => policy.RequireClaim("groups", "9a269943-07ba-4a85-bc48-8706f495d154")));
+            services.AddAuthorization(option => option.AddPolicy("DirectoryViewerRole", policy => policy.RequireClaim("roles", AppRoles.DirectoryViewers)));
+            services.AddAuthorization(option => option.AddPolicy("UserReaderRole", policy => policy.RequireClaim("roles", AppRoles.UserReaders)));
+
+            services.AddAuthorization(option => option.AddPolicy("BothRole", policy => {
+                policy.RequireRole(AppRoles.DirectoryViewers, AppRoles.UserReaders);
+                //policy.RequireClaim("roles", AppRoles.DirectoryViewers, AppRoles.UserReaders);
+            }));
+
+            services.AddAuthorization(option => option.AddPolicy("MixedRole", policy => {
+                policy.RequireAssertion(ctx =>
+                {
+                    return ctx.User.HasClaim("groups", "7b911a00-4cda-4ac8-8e9b-38255412c62c") || ctx.User.IsInRole(AppRoles.DirectoryViewers);
+                });
+            }));
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
